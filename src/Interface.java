@@ -3,15 +3,22 @@ import weka.core.converters.ConverterUtils.DataSource;
 public class Interface{
 
 
-    private ClassifyData classify;
 
     /**
      * Launch the application.
      */
-    public void main(String[] args) {
+    public static void main(String[] args) {
         //TODO: pass location by arg
+         ClassifyData classify = null;
+
         try {
             classify = new ClassifyData();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        classify.setInstances(args[0],Integer.parseInt(args[1]));
+        try {
+            classify.train();
         } catch (Exception e) {
             e.printStackTrace();
         }
