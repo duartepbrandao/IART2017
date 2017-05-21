@@ -19,6 +19,7 @@ public class Interface{
         classify.setInstances(args[0],Integer.parseInt(args[1]));
         try {
             classify.train();
+            classify.test();
         } catch (Exception e) {
             e.printStackTrace();
         }
