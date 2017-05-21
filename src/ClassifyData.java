@@ -8,6 +8,8 @@ import weka.core.*;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 import weka.filters.unsupervised.attribute.Remove;
 
+import java.util.Random;
+
 public class ClassifyData {
 
     static J48 classifier;
@@ -16,8 +18,12 @@ public class ClassifyData {
 
     public ClassifyData() throws Exception {
         classifier = new J48();
-        classifier.setOptions(new String[]{"-U"});
-
+        classifier.setBinarySplits(false);
+        classifier.setCollapseTree(true);
+        classifier.setUnpruned(false);
+        classifier.setConfidenceFactor((float) 0.25);
+        classifier.setMinNumObj(3);
+        classifier.setNumFolds(3);
     }
 
     public void setInstances(String filePath, int percentage) {
@@ -46,13 +52,12 @@ public class ClassifyData {
 
     public void train() throws Exception {
 
-        train.setClassIndex(train.numAttributes() - 1);
 
 
         NumericToNominal convert = new NumericToNominal();
         String[] options = new String[2];
         options[0] = "-R";
-        options[1] = "first-last";  //range of variables to make numeric
+        options[1] = "last";  //range of variables to make numeric
 
         convert.setOptions(options);
         convert.setInputFormat(train);
@@ -60,16 +65,16 @@ public class ClassifyData {
         Instances newData = Filter.useFilter(train, convert);
         train = newData;
 
+        train.setClassIndex(train.numAttributes() - 1);
         classifier.buildClassifier(train);
     }
 
     public void test() throws Exception {
 
-        evaluate.setClassIndex(evaluate.numAttributes() - 1);
         NumericToNominal convert = new NumericToNominal();
         String[] options = new String[2];
         options[0] = "-R";
-        options[1] = "first-last";  //range of variables to make numeric
+        options[1] = "last";  //range of variables to make numeric
         Instances newData = null;
 
         convert.setOptions(options);
@@ -79,12 +84,14 @@ public class ClassifyData {
 
         evaluate = newData;
 
+        evaluate.setClassIndex(evaluate.numAttributes() - 1);
         evaluation = new Evaluation(train);
 
-        System.out.println("ev " + evaluate.numInstances());
-
         //need to change train to evaluate
-        evaluation.evaluateModel(classifier, train);
+        evaluation.crossValidateModel(classifier, evaluate,10, new Random());
+
+        System.out.println(evaluation.toSummaryString("\nResults\n======\n", false));
+        evaluation.evaluateModel(classifier,evaluate);
 
         System.out.println(evaluation.toSummaryString("\nResults\n======\n", false));
 

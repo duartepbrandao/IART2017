@@ -11,6 +11,7 @@ public class Interface{
         //TODO: pass location by arg
          ClassifyData classify = null;
 
+
         try {
             classify = new ClassifyData();
         } catch (Exception e) {
@@ -23,7 +24,6 @@ public class Interface{
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
     }
 }
