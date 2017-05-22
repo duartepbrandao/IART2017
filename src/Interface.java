@@ -21,9 +21,11 @@ public class Interface{
         try {
             classify.train();
             classify.test();
+            classify.save_tree();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //input instance
 
     }
 }
